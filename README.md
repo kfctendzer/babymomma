@@ -1,11 +1,12 @@
-      ___           _     _ _     _           
-     / _ \   ___  _| |_  (_) |__ (_)_ __  _ __ 
-    / /_)/  / _ \/ _` |  | | '_ \| | '_ \| '__|
-   / ___/  |  __/ (_| |  | | | | | | | | | |   
-   \/       \___|\__,_|  |_|_| |_|_|_| |_|_|   
+======================================================================
+   ___           _     _ _     _           
+  / _ \   ___  _| |_  (_) |__ (_)_ __  _ __ 
+ / /_)/  / _ \/ _` |  | | '_ \| | '_ \| '__|
+/ ___/  |  __/ (_| |  | | | | | | | | | |   
+\/       \___|\__,_|  |_|_| |_|_|_| |_|_|   
 
         A S H I H R I O   •   O S I N T
-
+======================================================================
 
 ██████╗  ██████╗ ███████╗██╗███╗   ██╗████████╗
 ██╔══██╗██╔═══██╗██╔════╝██║████╗  ██║╚══██╔══╝
@@ -14,59 +15,51 @@
 ██████╔╝╚██████╔╝███████║██║██║ ╚████║   ██║   
 ╚═════╝  ╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝   ╚═╝   
 
-              P R O J E C T   0
+                     P R O J E C T   0
+======================================================================
 
-
-============================================================
 OSINT – Ashihiro’s Recon Toolkit
-============================================================
+======================================================================
+A modular, script‑driven open‑source intelligence framework designed for
+clean, fast, and repeatable reconnaissance workflows. Built with a
+console‑style aesthetic and structured output for real‑world pipelines.
 
-OSINT is a modular, script‑driven reconnaissance framework designed for fast, repeatable, and clean intelligence gathering. Everything is structured, predictable, and built for real workflows.
-
-============================================================
+======================================================================
 FEATURES
-============================================================
+======================================================================
+• Modular collectors (usernames, domains, IPs, emails, etc.)
+• Unified CLI with consistent flags
+• JSON, table, or file export
+• Config‑driven API keys, rate limits, and module toggles
+• Safe, passive OSINT only
+• Pipeline‑ready output for dashboards or automation
 
-- Modular collectors for usernames, domains, IPs, emails, and more
-- Unified CLI with consistent flags and output
-- JSON, table, or file export
-- Config‑driven API keys, rate limits, and module toggles
-- Safe, passive OSINT only
-- Pipeline‑ready output for dashboards or automation
-
-============================================================
+======================================================================
 INSTALLATION
-============================================================
-
-From source:
+======================================================================
+Clone and install:
 
     git clone https://example.com/ashihiro/osint.git
     cd osint
     python -m venv .venv
-    source .venv/bin/activate   (Windows: .venv\Scripts\activate)
+    source .venv/bin/activate     (Windows: .venv\Scripts\activate)
     pip install -r requirements.txt
     pip install -e .
 
-Check installation:
+Verify:
 
     osint --help
     osint modules list
 
-============================================================
+======================================================================
 USAGE
-============================================================
-
-Basic syntax:
+======================================================================
+Syntax:
 
     osint <resource-type> <value> [options]
 
 Resource types:
-    user
-    domain
-    ip
-    email
-    phone
-    custom
+    user, domain, ip, email, phone, custom
 
 Examples:
 
@@ -76,17 +69,19 @@ Username reconnaissance:
 
 Domain footprint:
 
-    osint domain example.com --modules dns,whois,certs,subdomains,breaches --format json --output out/example.com.json
+    osint domain example.com \
+        --modules dns,whois,certs,subdomains,breaches \
+        --format json \
+        --output out/example.com.json
 
 IP enrichment:
 
     osint ip 1.1.1.1 --modules geo,asn,blacklists --format table
 
-============================================================
+======================================================================
 CONFIGURATION
-============================================================
-
-Config file location:
+======================================================================
+Config file:
 
     ~/.config/osint/config.toml
 
@@ -102,7 +97,8 @@ Example:
     color          = true
 
     [modules]
-    enabled  = ["social", "dev", "dns", "whois", "certs", "subdomains", "breaches", "geo", "asn", "blacklists"]
+    enabled  = ["social", "dev", "dns", "whois", "certs", "subdomains",
+                "breaches", "geo", "asn", "blacklists"]
     disabled = []
 
     [secrets]
@@ -110,10 +106,9 @@ Example:
     shodan_api_key = "SHODAN_..."
     virustotal_key = "VT_..."
 
-============================================================
+======================================================================
 MODULE EXAMPLE (REAL CODE)
-============================================================
-
+======================================================================
     # osint/modules/social/github.py
 
     from osint.core.module import Module
@@ -123,7 +118,7 @@ MODULE EXAMPLE (REAL CODE)
     class GitHubModule(Module):
         name = "github"
         category = "social"
-        description = "Enumerate GitHub profile and metadata for a username."
+        description = "Enumerate GitHub profile and metadata."
 
         def run(self, username: str) -> Result:
             url = f"https://api.github.com/users/{username}"
@@ -158,10 +153,9 @@ Module registration:
         GitHubModule,
     ]
 
-============================================================
+======================================================================
 CLI ENTRYPOINT
-============================================================
-
+======================================================================
     # osint/cli.py
 
     import argparse
@@ -177,14 +171,11 @@ CLI ENTRYPOINT
 
         sub = parser.add_subparsers(dest="resource", required=True)
 
-        # user
         user_p = sub.add_parser("user", help="Username reconnaissance")
         user_p.add_argument("value", help="Username to investigate")
-        user_p.add_argument("--modules", help="Comma-separated module list", default=None)
+        user_p.add_argument("--modules", help="Comma-separated module list")
         user_p.add_argument("--format", choices=["table", "json"], default="table")
         user_p.add_argument("--output", help="Write results to file")
-
-        # TODO: domain, ip, email, etc.
 
         args = parser.parse_args()
 
@@ -195,39 +186,55 @@ CLI ENTRYPOINT
     if __name__ == "__main__":
         main()
 
-============================================================
-PROJECT STRUCTURE
-============================================================
-
+======================================================================
+DIRECTORY STRUCTURE (CLEAN + PREBUILT)
+======================================================================
     osint/
-      ├─ osint/
-      │   ├─ cli.py
-      │   ├─ core/
-      │   │   ├─ module.py
-      │   │   ├─ runner.py
-      │   │   ├─ output.py
-      │   │   └─ config.py
-      │   └─ modules/
-      │       ├─ social/
-      │       │   ├─ __init__.py
-      │       │   └─ github.py
-      │       ├─ dns/
-      │       ├─ whois/
-      │       └─ ...
-      ├─ tests/
-      ├─ README.md
-      └─ pyproject.toml / setup.cfg
+    ├── README.md
+    ├── pyproject.toml
+    ├── setup.cfg
+    ├── requirements.txt
+    ├── out/
+    │   └── (generated output files)
+    ├── tests/
+    │   └── test_core.py
+    └── osint/
+        ├── cli.py
+        ├── core/
+        │   ├── module.py
+        │   ├── runner.py
+        │   ├── output.py
+        │   └── config.py
+        └── modules/
+            ├── social/
+            │   ├── __init__.py
+            │   └── github.py
+            ├── dns/
+            │   └── resolver.py
+            ├── whois/
+            │   └── lookup.py
+            ├── certs/
+            │   └── fetch.py
+            ├── subdomains/
+            │   └── enum.py
+            ├── breaches/
+            │   └── check.py
+            ├── geo/
+            │   └── locate.py
+            ├── asn/
+            │   └── info.py
+            └── blacklists/
+                └── scan.py
 
-============================================================
+======================================================================
 ROADMAP
-============================================================
+======================================================================
+• More modules (breaches, infra, social platforms)
+• Full TUI dashboard
+• Exporters: CSV, SQLite, webhook
+• Python scripting API
+• Live recon session mode
 
-- More modules (breaches, infra, social platforms)
-- Full TUI dashboard
-- Exporters: CSV, SQLite, webhook
-- Python scripting API
-- Live recon session mode
-
-============================================================
+======================================================================
 END OF FILE
-============================================================
+======================================================================
