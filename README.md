@@ -1,59 +1,41 @@
-======================================================================
-   ___           _     _ _     _           
-  / _ \   ___  _| |_  (_) |__ (_)_ __  _ __ 
- / /_)/  / _ \/ _` |  | | '_ \| | '_ \| '__|
-/ ___/  |  __/ (_| |  | | | | | | | | | |   
-\/       \___|\__,_|  |_|_| |_|_|_| |_|_|   
-
-        A S H I H R I O   •   O S I N T
-======================================================================
-
-██████╗  ██████╗ ███████╗██╗███╗   ██╗████████╗
-██╔══██╗██╔═══██╗██╔════╝██║████╗  ██║╚══██╔══╝
-██████╔╝██║   ██║███████╗██║██╔██╗ ██║   ██║   
-██╔══██╗██║   ██║╚════██║██║██║╚██╗██║   ██║   
-██████╔╝╚██████╔╝███████║██║██║ ╚████║   ██║   
-╚═════╝  ╚═════╝ ╚══════╝╚═╝╚═╝  ╚═══╝   ╚═╝   
-
-                     P R O J E C T   0
-======================================================================
-
+============================================================
 OSINT – Ashihiro’s Recon Toolkit
-======================================================================
-A modular, script‑driven open‑source intelligence framework designed for
-clean, fast, and repeatable reconnaissance workflows. Built with a
-console‑style aesthetic and structured output for real‑world pipelines.
+============================================================
 
-======================================================================
+A clean, modular open‑source intelligence framework designed for fast,
+repeatable reconnaissance. Simple structure, predictable output, and
+easy integration into automation pipelines.
+
+============================================================
 FEATURES
-======================================================================
-• Modular collectors (usernames, domains, IPs, emails, etc.)
-• Unified CLI with consistent flags
-• JSON, table, or file export
-• Config‑driven API keys, rate limits, and module toggles
-• Safe, passive OSINT only
-• Pipeline‑ready output for dashboards or automation
+============================================================
+• Username, domain, IP, email, and phone lookups
+• Modular collector system
+• JSON or table output
+• Config‑driven API keys and settings
+• Passive OSINT only (no active attacks)
+• Pipeline‑friendly output
 
-======================================================================
+============================================================
 INSTALLATION
-======================================================================
+============================================================
 Clone and install:
 
-    git clone https://example.com/ashihiro/osint.git
+    git clone https://example.com/osint.git
     cd osint
     python -m venv .venv
-    source .venv/bin/activate     (Windows: .venv\Scripts\activate)
+    source .venv/bin/activate   (Windows: .venv\Scripts\activate)
     pip install -r requirements.txt
     pip install -e .
 
-Verify:
+Check:
 
     osint --help
     osint modules list
 
-======================================================================
+============================================================
 USAGE
-======================================================================
+============================================================
 Syntax:
 
     osint <resource-type> <value> [options]
@@ -63,24 +45,13 @@ Resource types:
 
 Examples:
 
-Username reconnaissance:
+    osint user ashihiro --modules social,dev --format table
+    osint domain example.com --modules dns,whois --format json
+    osint ip 1.1.1.1 --modules geo,asn --format table
 
-    osint user ashihiro --modules social,dev,forums --format table
-
-Domain footprint:
-
-    osint domain example.com \
-        --modules dns,whois,certs,subdomains,breaches \
-        --format json \
-        --output out/example.com.json
-
-IP enrichment:
-
-    osint ip 1.1.1.1 --modules geo,asn,blacklists --format table
-
-======================================================================
+============================================================
 CONFIGURATION
-======================================================================
+============================================================
 Config file:
 
     ~/.config/osint/config.toml
@@ -89,26 +60,23 @@ Example:
 
     [core]
     concurrency = 8
-    timeout     = 15
-    user_agent  = "Ashihiro-OSINT/1.0"
+    timeout = 15
 
     [output]
     default_format = "table"
-    color          = true
+    color = true
 
     [modules]
-    enabled  = ["social", "dev", "dns", "whois", "certs", "subdomains",
-                "breaches", "geo", "asn", "blacklists"]
-    disabled = []
+    enabled = ["social", "dns", "whois", "geo", "asn"]
 
     [secrets]
-    github_token   = "ghp_..."
-    shodan_api_key = "SHODAN_..."
-    virustotal_key = "VT_..."
+    github_token = "..."
+    shodan_api_key = "..."
+    virustotal_key = "..."
 
-======================================================================
-MODULE EXAMPLE (REAL CODE)
-======================================================================
+============================================================
+MODULE EXAMPLE
+============================================================
     # osint/modules/social/github.py
 
     from osint.core.module import Module
@@ -118,16 +86,14 @@ MODULE EXAMPLE (REAL CODE)
     class GitHubModule(Module):
         name = "github"
         category = "social"
-        description = "Enumerate GitHub profile and metadata."
 
         def run(self, username: str) -> Result:
             url = f"https://api.github.com/users/{username}"
             resp = requests.get(url, timeout=self.config.timeout)
 
             if resp.status_code == 404:
-                return self.result_empty(reason="User not found")
+                return self.result_empty("User not found")
 
-            resp.raise_for_status()
             data = resp.json()
 
             return Result(
@@ -138,24 +104,12 @@ MODULE EXAMPLE (REAL CODE)
                     "name": data.get("name"),
                     "public_repos": data.get("public_repos"),
                     "followers": data.get("followers"),
-                    "created_at": data.get("created_at"),
-                    "html_url": data.get("html_url"),
                 },
             )
 
-Module registration:
-
-    # osint/modules/social/__init__.py
-
-    from .github import GitHubModule
-
-    MODULES = [
-        GitHubModule,
-    ]
-
-======================================================================
+============================================================
 CLI ENTRYPOINT
-======================================================================
+============================================================
     # osint/cli.py
 
     import argparse
@@ -163,41 +117,39 @@ CLI ENTRYPOINT
     from osint.core.runner import run_task
     from osint.core.output import render
 
-    def main() -> None:
+    def main():
         parser = argparse.ArgumentParser(
             prog="osint",
-            description="Ashihiro's modular OSINT console."
+            description="Modular OSINT console."
         )
 
         sub = parser.add_subparsers(dest="resource", required=True)
 
-        user_p = sub.add_parser("user", help="Username reconnaissance")
-        user_p.add_argument("value", help="Username to investigate")
-        user_p.add_argument("--modules", help="Comma-separated module list")
-        user_p.add_argument("--format", choices=["table", "json"], default="table")
-        user_p.add_argument("--output", help="Write results to file")
+        user_p = sub.add_parser("user")
+        user_p.add_argument("value")
+        user_p.add_argument("--modules")
+        user_p.add_argument("--format", default="table")
+        user_p.add_argument("--output")
 
         args = parser.parse_args()
 
-        modules = load_modules(resource=args.resource, filter_string=args.modules)
-        results = run_task(resource=args.resource, value=args.value, modules=modules)
-        render(results, fmt=args.format, output_path=args.output)
+        modules = load_modules(args.resource, args.modules)
+        results = run_task(args.resource, args.value, modules)
+        render(results, args.format, args.output)
 
     if __name__ == "__main__":
         main()
 
-======================================================================
-DIRECTORY STRUCTURE (CLEAN + PREBUILT)
-======================================================================
+============================================================
+DIRECTORY STRUCTURE
+============================================================
     osint/
     ├── README.md
+    ├── requirements.txt
     ├── pyproject.toml
     ├── setup.cfg
-    ├── requirements.txt
     ├── out/
-    │   └── (generated output files)
     ├── tests/
-    │   └── test_core.py
     └── osint/
         ├── cli.py
         ├── core/
@@ -207,34 +159,13 @@ DIRECTORY STRUCTURE (CLEAN + PREBUILT)
         │   └── config.py
         └── modules/
             ├── social/
-            │   ├── __init__.py
             │   └── github.py
             ├── dns/
-            │   └── resolver.py
             ├── whois/
-            │   └── lookup.py
-            ├── certs/
-            │   └── fetch.py
-            ├── subdomains/
-            │   └── enum.py
-            ├── breaches/
-            │   └── check.py
             ├── geo/
-            │   └── locate.py
             ├── asn/
-            │   └── info.py
             └── blacklists/
-                └── scan.py
 
-======================================================================
-ROADMAP
-======================================================================
-• More modules (breaches, infra, social platforms)
-• Full TUI dashboard
-• Exporters: CSV, SQLite, webhook
-• Python scripting API
-• Live recon session mode
-
-======================================================================
+============================================================
 END OF FILE
-======================================================================
+============================================================
